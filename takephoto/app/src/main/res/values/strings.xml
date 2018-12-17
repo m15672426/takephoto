@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">stitp人脸识别</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_main3">Main3Activity</string>
+    <string name="title_activity_main4">Main3Activity</string>
+    <string name="title_activity_main5">Main3Activity</string>
+    <string name="title_activity_add_face">addFace</string>
+    <string name="use_directions">useDirections</string>
+</resources>
