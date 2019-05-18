@@ -44,7 +44,7 @@ public class addFace extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = ProgressDialog.show(addFace.this, "圆形进度条",
+                dialog = ProgressDialog.show(addFace.this, "人脸上传中",
                         "Loading. Please wait...", true);
                 // 设置ProgressDialog 标题图标
                 dialog.setIcon(R.drawable.shape_progressbar_bg);
@@ -56,26 +56,33 @@ public class addFace extends AppCompatActivity {
             numbers=number.getText().toString();
             if(numbers.equals("18805198520"))
             {
-            Intent intent=getIntent();
-            String filepath=intent.getStringExtra("extra");
-            if(filepath!=null) {
-                Toast.makeText(addFace.this,"正在进行人脸检测与上传请稍后......",Toast.LENGTH_LONG).show();
-                data = add(filepath, name);
-                Log.i("addFace", data);
-                if (data.indexOf(S) > 0) {
-                    intent = new Intent(addFace.this, Main4Activity.class);
-                    intent.putExtra("extra_datas", data);
-                    startActivity(intent);
-                } else {
-                    intent = new Intent(addFace.this, Main5Activity.class);
-                    intent.putExtra("extra_datas", data);
-                    startActivity(intent);
-                }
-            }
-            else {
-                intent = new Intent(addFace.this, useDirections.class);
-                startActivity(intent);
-            }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent=getIntent();
+                        String Filepath=intent.getStringExtra("extra");
+                        if(Filepath!=null) {
+                            //Toast.makeText(addFace.this,"正在进行人脸检测与上传请稍后......",Toast.LENGTH_LONG).show();
+                            System.out.println(Filepath);
+                            data = add(Filepath, name);
+                            System.out.println(data);
+                            System.out.println(data);
+                            if (data.indexOf(S) > 0) {
+                                intent = new Intent(addFace.this, Main4Activity.class);
+                                intent.putExtra("extra_datas", data);
+                                startActivity(intent);
+                            } else {
+                                intent = new Intent(addFace.this, Main5Activity.class);
+                                intent.putExtra("extra_datas", data);
+                                startActivity(intent);
+                            }
+                        }
+                        else {
+                            intent = new Intent(addFace.this, useDirections.class);
+                            startActivity(intent);
+                        }
+                    }
+                }).start();
             }
             else {
                 Toast.makeText(addFace.this,"账号不存在",Toast.LENGTH_LONG).show();
@@ -86,7 +93,6 @@ public class addFace extends AppCompatActivity {
 
     public static String add(String Filepath,String name) {
         // 请求url
-
         String url = "https://aip.baidubce.com/rest/2.0/face/v3/faceset/user/add";
         try {
             String image = Base64Util.encode(FileUtil.readFileByBytes(Filepath));
@@ -95,13 +101,14 @@ public class addFace extends AppCompatActivity {
             map.put("group_id", "1");
             map.put("user_id", name);
             map.put("user_info", "");
-            map.put("liveness_control", "HIGH");
+            map.put("liveness_control", "NORMAL");
             map.put("image_type", "BASE64");
             map.put("quality_control", "HIGH");
             String param = GsonUtils.toJson(map);
             // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
             String accessToken = APIConstants.TOKEN;
             String result = HttpUtil.post(url, accessToken, "application/json", param);
+            System.out.println(result);
             System.out.println(result);
             return result;
         } catch (Exception e) {
